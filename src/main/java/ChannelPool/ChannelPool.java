@@ -9,7 +9,7 @@ import com.rabbitmq.client.Channel;
 public class ChannelPool implements Cloneable{
   private GenericObjectPool<Channel> internalPool;
   public static GenericObjectPoolConfig defaultConfig;
-  private static ChannelFactory factory = ChannelFactory.getInstance();
+  private static ChannelFactory factory;
 
   static {
     defaultConfig = new GenericObjectPoolConfig();
@@ -19,7 +19,7 @@ public class ChannelPool implements Cloneable{
   }
 
   public ChannelPool() {
-    this(defaultConfig, factory);
+    this(defaultConfig, new ChannelFactory());
   }
 
   public ChannelPool(final GenericObjectPoolConfig poolConfig, ChannelFactory factory) {

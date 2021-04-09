@@ -1,12 +1,14 @@
 package RabbitMQ;
 
 
+import ChannelPool.ChannelPool;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,31 +17,29 @@ import java.util.concurrent.TimeoutException;
 
 public class RPCSend implements AutoCloseable {
 
-  private Connection connection;
+
   private Channel channel;
   private String requestQueueName = "rpc_queue";
+  private ChannelPool channelPool ;
 
   public RPCSend() throws IOException, TimeoutException {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost("localhost");
-
-    connection = factory.newConnection();
-    channel = connection.createChannel();
+    channelPool = new ChannelPool();
+    channel = channelPool.getChannel();
   }
 
-//  public static void main(String[] argv) throws IOException, TimeoutException, InterruptedException {
-//
-//    try (RPCClient marketRpc = new RPCClient()) {
-////      for (int i = 0; i < 32; i++) {
-////        String i_str = Integer.toString(i);
-////        System.out.println(" [x] Requesting fib(" + i_str + ")");
-////        String response = fibonacciRpc.call(i_str);
-////        System.out.println(" [.] Got '" + response + "'");
-////      }
-//    } catch (IOException | TimeoutException | InterruptedException e) {
-//      e.printStackTrace();
-//    }
-//  }
+  public static void main(String[] argv) throws Exception {
+
+    try (RPCSend marketRpc = new RPCSend()) {
+      for (int i = 0; i < 32; i++) {
+        String i_str = Integer.toString(i);
+        System.out.println(" [x] Requesting fib(" + i_str + ")");
+        String response = marketRpc.call(i_str);
+        System.out.println(" [.] Got '" + response + "'");
+      }
+    } catch (IOException | TimeoutException | InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
 
   public String call(String message) throws IOException, InterruptedException {
     final String corrId = UUID.randomUUID().toString();
@@ -67,7 +67,7 @@ public class RPCSend implements AutoCloseable {
     return result;
   }
 
-  public void close() throws IOException {
-    connection.close();
+  @Override
+  public void close() throws Exception {
   }
 }

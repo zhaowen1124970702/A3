@@ -161,19 +161,6 @@ public class ClientPart2 {
     }
   }
 
-//  private static void readData(String filePath,List<Integer> responseTime) throws Exception{
-//    File file = new File(filePath);
-//    List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-//    for (int i = 0; i < lines.size(); i++) {
-//      if(i==0){
-//        continue;
-//      }else{
-//        String[] array = lines.get(i).split(",");
-//        String data = array[3].substring(1,array[3].length()-1);
-//        responseTime.add(Integer.parseInt(data));
-//      }
-//    }
-//  }
 
   // Calculate the percentile
   private static long percentile(List<Integer> list, double percentile) {

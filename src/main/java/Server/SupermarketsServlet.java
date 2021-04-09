@@ -3,7 +3,7 @@ package Server;
 import ChannelPool.ChannelPool;
 import RabbitMQ.RabbitMQSend;
 import java.io.IOException;
-import java.nio.channels.Channel;
+//import java.nio.channels.Channel;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import com.rabbitmq.client.AMQP;
-//import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Channel;
 //import RabbitMQSend;
 
 import RabbitMQ.RPCSend;
@@ -24,15 +24,16 @@ import RabbitMQ.RPCSend;
 @WebServlet(name = "Server.SupermarketsServlet")
 public class SupermarketsServlet extends HttpServlet {
   private ChannelPool channelPool ;
-  private Channel channel;
-//
-//  public void init() throws ServletException {
-//    super.init();
-//    try{
-//      channelPool = new ChannelPool();
-//    }catch (Exception e){
-//    }
-//  }
+
+  @Override
+  public void init() throws ServletException {
+    super.init();
+    try {
+      channelPool = new ChannelPool();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
 
   protected void doPost(HttpServletRequest request,
@@ -81,76 +82,30 @@ public class SupermarketsServlet extends HttpServlet {
       String string = "{" + "\"customerID\": \"" + customerID +"\", " + "\"storeID\": \"" + storeID + "\", "
           + "\"orderDate\": \""+ orderDate + "\", " + "\"purchase\": "+ purchase + "}";
 
-      try (RabbitMQSend rabbitMQSend = new RabbitMQSend()) {
-//        System.out.println(" Requesting message");
-        rabbitMQSend.Send(string);
-//        rabbitMQSend.ThreadPoolSend(channelPool, string);
-      } catch (Exception e) {
+      Boolean isPublished = false;
+      try{
+        isPublished = publishMessage(string);
+      }catch (Exception e){
         e.printStackTrace();
       }
 
-      response.setStatus(HttpServletResponse.SC_OK);
-      response.getWriter().write("200: Send data successfully!");
+      if(isPublished){
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("Send data successfully!");
+      } else{
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write("Failed to Send data to rabbitMQ!");
+      }
+
     }
   }
 
-  protected void doGet(HttpServletRequest req,
-      HttpServletResponse res)
-      throws ServletException, IOException {
-    res.setContentType("text/plain");
-    String urlPath = req.getPathInfo();
-
-    // check we have a URL!
-    if (urlPath == null || urlPath.isEmpty()) {
-      res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      res.getWriter().write("missing paramterers");
-      return;
-    }
-
-    String[] urlParts = urlPath.split("/");
-    // and now validate url path and return the response status code
-    // (and maybe also some value if input is valid)
-
-    if (!isUrlValidDoGet(urlParts)) {
-      res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    } else {
-
-      // do any sophisticated processing with urlParts which contains all the url params
-      // TODO: process url params in `urlParts`
-
-      String message = new String();
-
-      if((urlParts[2]).equals("store")){
-        String storeID = urlParts[3];
-        message = "{" + "\"storeID\": \"" + storeID +"\", " + "}";
-      }
-      if((urlParts[2]).equals("top10")){
-        String itemID = urlParts[3];
-        message = "{" + "\"itemID\": \"" + itemID +"\", " + "}";
-      }
-      String response = new String();
-      try (RPCSend marketRpc = new RPCSend()) {
-//        System.out.println(" Requesting message");
-        response = marketRpc.call(message);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      res.setStatus(HttpServletResponse.SC_OK);
-      res.getWriter().write(response);
-    }
-
-
-  }
     private boolean isUrlValid(String[] split) {
       return split.length == 6 &&
           isInteger(split[1]) && split[2].equals("customer") &&
           isInteger(split[3]) && split[4].equals("date") && isValidDate(split[5]);
     }
 
-  private boolean isUrlValidDoGet(String[] split) {
-    return split.length == 4 && split[1].equals("items") &&
-        ((split[2]).equals("store") || split[2].equals("top10")) && isInteger(split[3]);
-  }
 
     private boolean isInteger(String s){
       try{
@@ -169,6 +124,19 @@ public class SupermarketsServlet extends HttpServlet {
         return false;
       }
       return true;
+    }
+
+    public boolean publishMessage(String message) throws IOException{
+      boolean isPublished = false;
+      Channel channel = channelPool.getChannel();
+      final String EXCHANGE_NAME = "purchase";
+      channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+      channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+      channelPool.returnChannel(channel);
+      isPublished =  true;
+      return isPublished;
+
+
     }
 }
 

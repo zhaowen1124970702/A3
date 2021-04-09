@@ -14,4 +14,14 @@
     <url-pattern>/purchase/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>StoreServlet</servlet-name>
+    <servlet-class>Server.StoreServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>StoreServlet</servlet-name>
+    <url-pattern>/items/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

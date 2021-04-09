@@ -1,5 +1,6 @@
 package RabbitMQ;
 
+import ChannelPool.ChannelPool;
 import DB.MarketDao;
 import com.rabbitmq.client.*;
 import org.json.JSONArray;
@@ -10,11 +11,10 @@ public class RPCRec {
   private static final String RPC_QUEUE_NAME = "rpc_queue";
 
   public static void main(String[] argv) throws Exception {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost("localhost");
+    ChannelPool channelPool = new ChannelPool();
 
-    try (Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel()) {
+    try (
+        Channel channel = channelPool.getChannel()) {
       channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
       channel.queuePurge(RPC_QUEUE_NAME);
 
