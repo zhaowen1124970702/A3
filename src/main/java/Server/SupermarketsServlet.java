@@ -1,7 +1,6 @@
 package Server;
 
 import ChannelPool.ChannelPool;
-import RabbitMQ.RabbitMQSend;
 import java.io.IOException;
 //import java.nio.channels.Channel;
 import javax.servlet.ServletException;
@@ -14,11 +13,9 @@ import java.io.BufferedReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-//import RabbitMQSend;
 
-import RabbitMQ.RPCSend;
+
 
 
 @WebServlet(name = "Server.SupermarketsServlet")

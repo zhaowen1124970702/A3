@@ -20,10 +20,10 @@ public class HikariCPDataSource {
 //  private static final String USERNAME = System.getProperty("USERNAME");
 //  private static final String PASSWORD = System.getProperty("PASSWORD");
 
-  private static final String HOST_NAME = "127.0.0.1";
+  private static final String HOST_NAME = "a3.cabss680rsch.us-east-1.rds.amazonaws.com";
   private static final String PORT = "3306";
   private static final String DATABASE = "A3_Supermarket";
-  private static final String USERNAME = "root";
+  private static final String USERNAME = "admin";
   private static final String PASSWORD = "Mf9005061123";
 
 //  private static final String HOST_NAME = "a2supermarket.cabss680rsch.us-east-1.rds.amazonaws.com";

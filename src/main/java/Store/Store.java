@@ -37,6 +37,7 @@ public class Store {
             try {
               Channel channel = channelPool.getChannel();
               String queueName = channel.queueDeclare().getQueue();
+              System.out.println("queueName in PurchaseRunnable in Store: "+ queueName);
               channel.basicQos(20);
               channel.queueBind(queueName, EXCHANGE_NAME, "");
               System.out.println(" [*] Waiting for messages. To exit press CTRL+C");

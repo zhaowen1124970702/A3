@@ -34,7 +34,7 @@ public class ChannelFactory implements PooledObjectFactory<Channel> {
 //      }
       connection = factory.newConnection();
     } catch (Exception e) {
-      throw new ChannelException("连接失败", e);
+      throw new ChannelException("connection failed in creating channelFactory", e);
     }
   }
 

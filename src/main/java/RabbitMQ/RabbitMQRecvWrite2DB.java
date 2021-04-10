@@ -3,7 +3,6 @@ package RabbitMQ;
 import ChannelPool.ChannelPool;
 import DB.MarketDao;
 import com.rabbitmq.client.*;
-import java.io.IOException;
 import org.json.JSONObject;
 
 public class RabbitMQRecvWrite2DB {
@@ -40,9 +39,11 @@ public class RabbitMQRecvWrite2DB {
           String purchase = json.getJSONObject("purchase").toString();
           MarketDao marketDao = new MarketDao();
           marketDao.createMarketDao(storeID, customerID, orderDate, purchase);
-        }finally {
-          System.out.println("[x] done");
+          System.out.println("[x] write data done");
+        }catch (Exception e){
+          e.printStackTrace();
         }
+
       };
       boolean autoAck = true;
       channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> { });

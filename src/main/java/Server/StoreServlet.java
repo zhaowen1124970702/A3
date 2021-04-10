@@ -1,13 +1,9 @@
 package Server;
 
 import ChannelPool.ChannelPool;
-import RabbitMQ.RPCSend;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -46,15 +42,9 @@ public class StoreServlet extends HttpServlet {
     }
 
     String[] urlParts = urlPath.split("/");
-    // and now validate url path and return the response status code
-    // (and maybe also some value if input is valid)
-
     if (!isUrlValidDoGet(urlParts)) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
     } else {
-
-      // do any sophisticated processing with urlParts which contains all the url params
-      // TODO: process url params in `urlParts`
 
       String query = new String();
       String queryID = new String();
