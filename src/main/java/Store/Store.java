@@ -39,14 +39,19 @@ public class Store {
               Channel channel = channelPool.getChannel();
               // try to set exchange type to see the pfc diff
               channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
+              
+              // test persistent or non-persistent diff
               String queueName = channel.queueDeclare().getQueue();
+//              String queueName = channel.queueDeclare("", true, false, false, null).getQueue();
+
               channel.basicQos(20);
               channel.queueBind(queueName, EXCHANGE_NAME, "");
               System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-
+              System.out.println(" test1");
               DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-//                System.out.println(" [x] Received '" + message + "'");
+                System.out.println(" test2");
+                System.out.println(" [x] Received '" + message + "'");
 
                 JSONObject json = new JSONObject(message);
                 String storeID = json.getString("storeID");
@@ -54,18 +59,14 @@ public class Store {
 
                 try {
                   storeMap.updateMap(storeID, purchase);
-//                  System.out.println(storeMap.storeItemNumMap().size());
                 } catch (Exception e) {
                   e.printStackTrace();
-                }finally {
-                  if(!AUTO_ACK){
-                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
-                  }
                 }
               };
-//              boolean autoAck = true;
-              channel.basicConsume(queueName, AUTO_ACK, deliverCallback, consumerTag -> { });
-
+              System.out.println(" test3");
+              boolean autoAck = true;
+              channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> { });
+              System.out.println(" test4");
               channelPool.returnChannel(channel);
 
           }catch(Exception e){

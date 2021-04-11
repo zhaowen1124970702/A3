@@ -1,6 +1,7 @@
 package Server;
 
 import ChannelPool.ChannelPool;
+import com.rabbitmq.client.MessageProperties;
 import java.io.IOException;
 //import java.nio.channels.Channel;
 import javax.servlet.ServletException;
@@ -84,6 +85,8 @@ public class SupermarketsServlet extends HttpServlet {
         isPublished = publishMessage(string);
       }catch (Exception e){
         e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write(e.getMessage());
       }
 
       if(isPublished){
@@ -128,7 +131,9 @@ public class SupermarketsServlet extends HttpServlet {
       Channel channel = channelPool.getChannel();
       final String EXCHANGE_NAME = "purchase";
       channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+      // test persistent or non-persistent diff
       channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+//      channel.basicPublish(EXCHANGE_NAME, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
       channelPool.returnChannel(channel);
       isPublished =  true;
       return isPublished;

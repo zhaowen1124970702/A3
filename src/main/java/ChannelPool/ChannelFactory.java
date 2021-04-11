@@ -23,6 +23,7 @@ public class ChannelFactory implements PooledObjectFactory<Channel> {
       factory.setUsername(USERNAME);
       factory.setPassword(PASSWORD);
       factory.setVirtualHost("/");
+      factory.setAutomaticRecoveryEnabled(true);
       connection = factory.newConnection();
     } catch (Exception e) {
       throw new ChannelException("connection failed in creating channelFactory", e);
