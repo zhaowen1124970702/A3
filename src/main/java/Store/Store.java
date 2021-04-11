@@ -39,10 +39,10 @@ public class Store {
               Channel channel = channelPool.getChannel();
               // try to set exchange type to see the pfc diff
               channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
-              
+
               // test persistent or non-persistent diff
-              String queueName = channel.queueDeclare().getQueue();
-//              String queueName = channel.queueDeclare("", true, false, false, null).getQueue();
+//              String queueName = channel.queueDeclare().getQueue();
+              String queueName = channel.queueDeclare("", true, false, false, null).getQueue();
 
               channel.basicQos(20);
               channel.queueBind(queueName, EXCHANGE_NAME, "");

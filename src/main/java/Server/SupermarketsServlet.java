@@ -132,8 +132,8 @@ public class SupermarketsServlet extends HttpServlet {
       final String EXCHANGE_NAME = "purchase";
       channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
       // test persistent or non-persistent diff
-      channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
-//      channel.basicPublish(EXCHANGE_NAME, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+//      channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+      channel.basicPublish(EXCHANGE_NAME, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
       channelPool.returnChannel(channel);
       isPublished =  true;
       return isPublished;
