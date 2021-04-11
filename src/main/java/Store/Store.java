@@ -22,6 +22,7 @@ public class Store {
   private static final String EXCHANGE_NAME = "purchase";
   private static final String RPC_QUEUE_NAME = "rpc_queue";
   private static final int NUM_THREADS = 4;
+  private static final boolean AUTO_ACK = true;
 
   public static void main(String[] argv) throws Exception {
     StoreSerevice();
@@ -36,17 +37,16 @@ public class Store {
         () -> {
             try {
               Channel channel = channelPool.getChannel();
+              // try to set exchange type to see the pfc diff
+              channel.exchangeDeclare(EXCHANGE_NAME,"fanout",true);
               String queueName = channel.queueDeclare().getQueue();
-              System.out.println("queueName in PurchaseRunnable in Store: "+ queueName);
               channel.basicQos(20);
               channel.queueBind(queueName, EXCHANGE_NAME, "");
               System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-//              Object monitor = new Object();
 
               DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-                System.out.println(" [x] Received '" + message + "'");
-
+//                System.out.println(" [x] Received '" + message + "'");
 
                 JSONObject json = new JSONObject(message);
                 String storeID = json.getString("storeID");
@@ -57,10 +57,14 @@ public class Store {
 //                  System.out.println(storeMap.storeItemNumMap().size());
                 } catch (Exception e) {
                   e.printStackTrace();
+                }finally {
+                  if(!AUTO_ACK){
+                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
+                  }
                 }
               };
-              boolean autoAck = true;
-              channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> { });
+//              boolean autoAck = true;
+              channel.basicConsume(queueName, AUTO_ACK, deliverCallback, consumerTag -> { });
 
               channelPool.returnChannel(channel);
 
@@ -91,7 +95,7 @@ public class Store {
 
           try {
             String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println("messagefromDoGet: " + message);
+//            System.out.println("messagefromDoGet: " + message);
 
             JSONObject json = new JSONObject(message);
             String storeID = null;

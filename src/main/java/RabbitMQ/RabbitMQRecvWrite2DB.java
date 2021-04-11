@@ -29,7 +29,7 @@ public class RabbitMQRecvWrite2DB {
 
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
-        System.out.println(" [x] Received '" + message + "'");
+//        System.out.println(" [x] Received '" + message + "'");
 
         try{
           JSONObject json = new JSONObject(message);
@@ -39,7 +39,7 @@ public class RabbitMQRecvWrite2DB {
           String purchase = json.getJSONObject("purchase").toString();
           MarketDao marketDao = new MarketDao();
           marketDao.createMarketDao(storeID, customerID, orderDate, purchase);
-          System.out.println("[x] write data done");
+//          System.out.println("[x] write data done");
         }catch (Exception e){
           e.printStackTrace();
         }
@@ -52,40 +52,4 @@ public class RabbitMQRecvWrite2DB {
     }
 
   }
-
-//  private static void SingleChannelRecieve(){
-//    ConnectionFactory factory = new ConnectionFactory();
-//    factory.setHost("localhost");
-//    factory.setPort(5672);
-//    Connection connection = factory.newConnection();
-//    Channel channel = connection.createChannel();
-//
-//    channel.basicQos(1);
-////    channel.queueDeclare(QUEUE_NAME,false,false,false,null);
-//    String queueName = channel.queueDeclare().getQueue();
-//    channel.queueBind(queueName,EXCHANGE_NAME,"");
-//
-//
-//    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-//
-//    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-//      String message = new String(delivery.getBody(), "UTF-8");
-//      System.out.println(" [x] Received '" + message + "'");
-//
-//      try{
-//        JSONObject json = new JSONObject(message);
-//        String customerID = json.getString("customerID");
-//        String storeID = json.getString("storeID");
-//        String orderDate = json.getString("orderDate");
-//        String purchase = json.getJSONObject("purchase").toString();
-//        MarketDao marketDao = new MarketDao();
-//        marketDao.createMarketDao(storeID, customerID, orderDate, purchase);
-//      }finally {
-//        System.out.println("[x] done");
-//      }
-//    };
-//    boolean autoAck = true;
-//    channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> { });
-//
-//  }
 }

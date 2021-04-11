@@ -97,9 +97,5 @@ public class StoreMap {
     return res.toString();
   }
 
-//  public HashMap<String, Integer> storeItemNumMap(){
-//    return storeItemNumMap;
-//  }
-
 }
 

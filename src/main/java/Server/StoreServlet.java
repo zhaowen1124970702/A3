@@ -54,15 +54,12 @@ public class StoreServlet extends HttpServlet {
         queryID = urlParts[2];
         query = "store";
         message = "{\"query\" : " + query + ", \"queryID\" : " + queryID + "}";
-//        message = "{" + "\"query\": \"" + "storeID" + "\"storeID\": \"" + storeID +"\", " + "}";
-//        message = "{" + "\"storeID\": \"" + storeID +"\", " + "}";
       }
       if((urlParts[1]).equals("top10")){
         queryID = urlParts[2];
         query = "item";
         message = "{\"query\" : " + query + ", \"queryID\" : " + queryID + "}";
-//        message = "{" + "\"itemID\": \"" + itemID +"\", " + "}";
-//        message = "{" + "\"query\": \"" + "itemID" + "\"itemID\": \"" + itemID +"\", " + "}";
+
       }
       String result = new String();
       try{
