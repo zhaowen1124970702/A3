@@ -38,7 +38,7 @@ public class Store {
             try {
               Channel channel = channelPool.getChannel();
               // try to set exchange type to see the pfc diff
-              channel.exchangeDeclare(EXCHANGE_NAME,"fanout",true);
+              channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
               String queueName = channel.queueDeclare().getQueue();
               channel.basicQos(20);
               channel.queueBind(queueName, EXCHANGE_NAME, "");
